@@ -11,3 +11,6 @@ RUN sudo apt-get update && \
 RUN wget -O ~/ChromeSetup.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" && \
     sudo dpkg -i ~/ChromeSetup.deb; sudo apt-get -fy install && \
     rm ~/ChromeSetup.deb
+
+RUN curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/cc-test-reporter && \
+    chmod +x ~/cc-test-reporter
