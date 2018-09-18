@@ -167,6 +167,8 @@ RUN curl --silent --show-error --location --fail --retry 3 --output /tmp/google-
   && google-chrome --version
 
 RUN sudo chown -R circleci /usr/local \
+  && git config --global user.email "aurelia@bluespire.com" \
+  && git config --global user.name "AureliaEffect" \
   && npm i -g npm codecov http-server \
   && curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/cc-test-reporter \
   && chmod +x ~/cc-test-reporter
