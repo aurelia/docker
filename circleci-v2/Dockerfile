@@ -63,6 +63,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     libdbus-glib-1-2 \
     libdbus-1-3 \
+    vim \
   && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd --gid 1000 node \
@@ -149,7 +150,7 @@ RUN if grep -q Debian /etc/os-release && grep -q jessie /etc/os-release; then \
 
 # install firefox
 #
-RUN FIREFOX_URL="https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US" \
+RUN FIREFOX_URL="https://download.mozilla.org/?product=firefox-beta-latest-ssl&os=linux64&lang=en-US" \
   && ACTUAL_URL=$(curl -Ls -o /dev/null -w %{url_effective} $FIREFOX_URL) \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/firefox.tar.bz2 $ACTUAL_URL \
   && sudo tar -xvjf /tmp/firefox.tar.bz2 -C /opt \
@@ -169,9 +170,13 @@ RUN curl --silent --show-error --location --fail --retry 3 --output /tmp/google-
 RUN sudo chown -R circleci /usr/local \
   && git config --global user.email "aurelia@bluespire.com" \
   && git config --global user.name "AureliaEffect" \
+  && git config --global core.editor "vim" \
+  && git config --global core.mergeoptions --no-edit \
   && npm i -g npm codecov http-server \
   && curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/cc-test-reporter \
   && chmod +x ~/cc-test-reporter
+
+ENV GIT_MERGE_AUTOEDIT no
 
 # start xvfb automatically to avoid needing to express in circle.yml
 ENV DISPLAY :99
