@@ -3,57 +3,59 @@ version: 2.1
 commands:
   build:
     parameters:
-      image:
+      img:
         type: string
     steps:
-      - checkout
-
-      - run: docker build -t << parameters.image >> . -f << parameters.image >>/Dockerfile
-
-      - run: docker tag << parameters.image >> aureliaeffect/<< parameters.image >>:$(date -u +"%Y%m%d")
-      - run: docker tag << parameters.image >> aureliaeffect/<< parameters.image >>:latest
+      - run: docker build -t << parameters.img >> . -f << parameters.img >>/Dockerfile
+      - run: docker tag << parameters.img >> aureliaeffect/<< parameters.img >>:$(date -u +"%Y%m%d")
+      - run: docker tag << parameters.img >> aureliaeffect/<< parameters.img >>:latest
 
   push:
     parameters:
-      image:
+      img:
         type: string
     steps:
-      - checkout
-
-      - run: docker login -u aureliaeffect -p $DOCKER_PASSWORD
-  
-      - run: docker push aureliaeffect/<< parameters.image >> && sleep 10
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: docker push aureliaeffect/<< parameters.img >> && sleep 10
 
 jobs:
+  build_v1:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v1"
+          
+  build_v2:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v2"
+
   build_push_v1:
     machine: true
     steps:
+      - checkout
       - build:
-          image: circleci-v1
+          img: "circleci-v1"
       - push:
-          image: circleci-v1
-
+          img: "circleci-v1"
+          
   build_push_v2:
     machine: true
     steps:
+      - checkout
       - build:
-          image: circleci-v2
+          img: "circleci-v2"
       - push:
-          image: circleci-v2
-
-  build_all:
-    machine: true
-    steps:
-      - build:
-          image: circleci-v1
-      - build:
-          image: circleci-v2
+          img: "circleci-v2"
 
 workflows:
-  version: 2.1
-  build:
+  build_all:
     jobs:
-      - build_all
+      - build_v1
+      - build_v2
 
   build_publish_daily:
     triggers:
