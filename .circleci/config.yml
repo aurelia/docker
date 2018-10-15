@@ -50,6 +50,7 @@ jobs:
           image: circleci-v2
 
 workflows:
+  version: 2.1
   build:
     jobs:
       - build_all
