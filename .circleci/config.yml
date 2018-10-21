@@ -1,0 +1,74 @@
+version: 2.1
+
+commands:
+  build:
+    parameters:
+      img:
+        type: string
+    steps:
+      - run: docker build -t << parameters.img >> . -f << parameters.img >>/Dockerfile
+      - run: docker tag << parameters.img >> aureliaeffect/<< parameters.img >>:$(date -u +"%Y%m%d")
+      - run: docker tag << parameters.img >> aureliaeffect/<< parameters.img >>:latest
+
+  push:
+    parameters:
+      img:
+        type: string
+    steps:
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: docker push aureliaeffect/<< parameters.img >> && sleep 10
+
+jobs:
+  build_v1:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v1"
+          
+  build_v2:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v2"
+
+  build_push_v1:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v1"
+      - push:
+          img: "circleci-v1"
+          
+  build_push_v2:
+    machine: true
+    steps:
+      - checkout
+      - build:
+          img: "circleci-v2"
+      - push:
+          img: "circleci-v2"
+
+workflows:
+  build_all:
+    jobs:
+      - build_v1
+      - build_v2
+
+  build_publish_daily:
+    triggers:
+      - schedule:
+          # Executes on a daily schedule 6 hours after regular Aurelia nightly builds
+          # This schedule is meant to prevent even the remote possibility of overlap between the nightlies,
+          # and allow for plenty of time to detect/fix a broken docker image before the next nightly
+          cron: "0 6 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build_push_v1
+      - build_push_v2
+
