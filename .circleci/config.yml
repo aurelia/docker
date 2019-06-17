@@ -63,7 +63,7 @@ workflows:
           # Executes on a daily schedule 6 hours after regular Aurelia nightly builds
           # This schedule is meant to prevent even the remote possibility of overlap between the nightlies,
           # and allow for plenty of time to detect/fix a broken docker image before the next nightly
-          cron: "47 1 * * *"
+          cron: "0 6 * * *"
           filters:
             branches:
               only:
