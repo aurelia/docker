@@ -1,4 +1,4 @@
-FROM shahabganji/aurelia/base:1.0.2
+FROM bluespire/aurelia:1.0.2
 
 ENV DEBIAN_FRONTEND=noninteractive
 
